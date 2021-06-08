@@ -58,7 +58,6 @@ table {
 #board td {
   width: 50px;
   height: 50px;
-  /* border: solid 1px rgb(46, 46, 46); */
   background-color: rgb(235, 230, 222);
   border-radius: 20%;
 }
@@ -91,7 +90,8 @@ table {
 /* column-top is table row of clickable areas for each column */
 
 #column-top td {
-  border: dashed 1px rgb(139, 137, 136);
+  background-color: rgb(223, 215, 202);
+  border: dashed 2px rgb(139, 137, 136);
 }
 
 #column-top td:hover {

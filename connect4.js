@@ -100,12 +100,12 @@ function endGame(msg) {
   const selectBG = document.querySelector('table');
   selectBG.classList.add('endgame');
 
-  // create gameover div
+  // // create gameover div
   const gameOverDiv = document.createElement('div');
   gameOverDiv.classList.add('endgame-message', 'tracking-in-expand');
   document.body.append(gameOverDiv);
 
-  // create text
+  // // create text
   const gameOverText = document.createElement('h1');
   gameOverText.textContent = msg;
   gameOverText.classList.add('endgame-text', 'tracking-in-expand');
@@ -143,8 +143,8 @@ function handleClick(evt) {
   }
 
   // check for tie
-  if (checkForTie()) {
-    return endGame(`It's a tie!`);
+  if (board.every((arr) => arr.every((val) => val))) {
+    return endGame("It's a Tie!");
   }
 
   // switch players
@@ -152,13 +152,7 @@ function handleClick(evt) {
 }
 
 /* checkForTie: check board to see if every space is filled */
-function checkForTie() {
-  board.every(function (arr) {
-    return arr.every(function (val) {
-      return val !== null;
-    });
-  });
-}
+function checkForTie() {}
 
 /* checkForWin: check board cell-by-cell for "does a win start here?" */
 function checkForWin() {
