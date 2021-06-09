@@ -2,4 +2,6 @@
 
 Springboard Connect 4 project, in process.
 
-To be implemented: replay game button.
+### To be implemented: 
+
+Replay game button.
