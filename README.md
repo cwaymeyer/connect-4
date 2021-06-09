@@ -1,6 +1,5 @@
 # connect-4
-First draft of Springboard Connect 4 project.
 
-Design almost complete, code 95% functional (check for ties not operational).
+Springboard Connect 4 project, in process.
 
-Code rough, not optimized. Complete version to come.
+To be implemented: replay game button.

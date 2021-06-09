@@ -14,12 +14,13 @@ let board = []; // array of rows, each row is array of cells  (board[y][x])
 
 /** makeBoard: create in-JS board structure:
  *    board = array of rows, each row is array of cells  (board[y][x])
+ *    board = WIDTH # of arrays each containing HEIGHT number of cells
  */
 
 function makeBoard() {
   for (let i = 0; i < WIDTH; i++) {
     let newArray = [];
-    for (let x = 0; x < HEIGHT; x++) {
+    for (let n = 0; n < HEIGHT; n++) {
       newArray.push(null);
     }
     board.push(newArray);
@@ -32,34 +33,25 @@ function makeBoard() {
 function makeHtmlBoard() {
   const htmlBoard = document.getElementById('board');
 
-  // Create drop zone
+  // Create click zone to drop pieces
   const top = document.createElement('tr');
   top.setAttribute('id', 'column-top');
   top.addEventListener('click', handleClick);
-
   for (let x = 0; x < WIDTH; x++) {
     const headCell = document.createElement('td');
     // give id of x axis position
     headCell.setAttribute('id', x);
-    // console log
     top.append(headCell);
   }
   htmlBoard.append(top);
 
   // Create the game board
-  // Height loop
   for (let y = 0; y < HEIGHT; y++) {
     const row = document.createElement('tr');
-    // Width loop
     for (let x = 0; x < WIDTH; x++) {
       const cell = document.createElement('td');
       // give id of y-x axis positions for each tile
       cell.setAttribute('id', `${y}-${x}`);
-      // console log
-      cell.addEventListener('click', function (e) {
-        console.log(e.target.id);
-        console.log(e.target);
-      });
       row.append(cell);
     }
     htmlBoard.append(row);
@@ -90,7 +82,6 @@ function placeInTable(y, x) {
   // update HTML board
   const placeInBoard = document.getElementById(`${y}-${x}`);
   placeInBoard.append(newTile);
-  // update board array
 }
 
 /** endGame: announce game end */
@@ -100,12 +91,12 @@ function endGame(msg) {
   const selectBG = document.querySelector('table');
   selectBG.classList.add('endgame');
 
-  // // create gameover div
+  // create game-over div
   const gameOverDiv = document.createElement('div');
   gameOverDiv.classList.add('endgame-message', 'tracking-in-expand');
   document.body.append(gameOverDiv);
 
-  // // create text
+  // create winner/tie text
   const gameOverText = document.createElement('h1');
   gameOverText.textContent = msg;
   gameOverText.classList.add('endgame-text', 'tracking-in-expand');
@@ -118,8 +109,6 @@ function handleClick(evt) {
   // get x from clicked cell
   const x = +evt.target.id;
 
-  console.log(`x = ${x}`);
-
   // get next spot in column (if none, ignore click)
   const y = findSpotForCol(x);
   if (y === null) {
@@ -129,7 +118,7 @@ function handleClick(evt) {
   // place piece in board and add to HTML table
   placeInTable(y, x);
 
-  // add line to update in-memory board
+  // update in-memory board
   for (let i = WIDTH; i >= 0; i--) {
     if (board[x][i] === null) {
       board[x][i] = currPlayer;
@@ -150,9 +139,6 @@ function handleClick(evt) {
   // switch players
   currPlayer === 1 ? currPlayer++ : currPlayer--;
 }
-
-/* checkForTie: check board to see if every space is filled */
-function checkForTie() {}
 
 /* checkForWin: check board cell-by-cell for "does a win start here?" */
 function checkForWin() {

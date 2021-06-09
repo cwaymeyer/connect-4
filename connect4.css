@@ -39,8 +39,8 @@ h1 {
   margin-left: auto;
   margin-right: auto;
   position: relative;
-  height: 480px;
-  width: 500px;
+  height: 550px;
+  width: 580px;
   background-color: white;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
     rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
@@ -56,8 +56,8 @@ table {
 /* game board table */
 
 #board td {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   background-color: rgb(235, 230, 222);
   border-radius: 20%;
 }
@@ -108,8 +108,8 @@ table {
 
 .endgame-message {
   position: absolute;
-  top: 35%;
-  height: 200px;
+  top: 30%;
+  height: 180px;
   width: 100%;
   background-color: rgba(255, 255, 255, 0.671);
 }
