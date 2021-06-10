@@ -88,6 +88,11 @@ function placeInTable(y, x) {
 /** endGame: announce game end */
 
 function endGame(msg) {
+  // remove game-board event listeners
+  topRow = document.getElementById('column-top');
+  topRow.removeEventListener('click', handleClick);
+  topRow.removeEventListener('mouseover', hoverPreview);
+
   // create game-over div
   const gameOverDiv = document.createElement('div');
   gameOverDiv.classList.add('endgame-message', 'tracking-in-expand');
@@ -173,12 +178,8 @@ function hoverPreviewRemove(e) {
 /** handleClick: handle click of column top to play piece */
 
 function handleClick(evt) {
-  // remove ghost piece
-  const ghostPiece = document.getElementById('ghost-piece');
-  ghostPiece.remove();
-
   // get x from clicked cell
-  const x = +evt.target.id;
+  const x = evt.target.id;
 
   // get next spot in column (if none, ignore click)
   const y = findSpotForCol(x);
@@ -291,6 +292,7 @@ function resetGame() {
   currPlayer = 1;
 
   makeBoard();
+  top.addEventListener('click', handleClick);
 }
 
 makeBoard();
