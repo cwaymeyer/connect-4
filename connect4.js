@@ -12,6 +12,8 @@ let currPlayer = 1; // active player (1 or 2)
 
 let board = []; // array of rows, each row is array of cells  (board[y][x])
 
+let hoverX = 0; // id to store for displaying and removing tile preview
+
 /** makeBoard: create in-JS board structure:
  *    board = array of rows, each row is array of cells  (board[y][x])
  *    board = WIDTH # of arrays each containing HEIGHT number of cells
@@ -37,6 +39,8 @@ function makeHtmlBoard() {
   const top = document.createElement('tr');
   top.setAttribute('id', 'column-top');
   top.addEventListener('click', handleClick);
+  top.addEventListener('mouseover', hoverPreview);
+  top.addEventListener('mouseout', hoverPreviewRemove);
   for (let x = 0; x < WIDTH; x++) {
     const headCell = document.createElement('td');
     // give id of x axis position
@@ -73,13 +77,8 @@ function findSpotForCol(x) {
 function placeInTable(y, x) {
   // create game piece
   const newTile = document.createElement('div');
-  newTile.classList.add('piece');
-  if (currPlayer === 1) {
-    newTile.classList.add('p1');
-  } else {
-    newTile.classList.add('p2');
-  }
-  // update HTML board
+  newTile.classList.add('piece', 'bounce-in-top', `p${currPlayer}`);
+  // update HTML boardx`
   const placeInBoard = document.getElementById(`${y}-${x}`);
   placeInBoard.append(newTile);
 }
@@ -87,25 +86,71 @@ function placeInTable(y, x) {
 /** endGame: announce game end */
 
 function endGame(msg) {
-  // blur board
-  const selectBG = document.querySelector('table');
-  selectBG.classList.add('endgame');
-
   // create game-over div
   const gameOverDiv = document.createElement('div');
   gameOverDiv.classList.add('endgame-message', 'tracking-in-expand');
-  document.body.append(gameOverDiv);
 
   // create winner/tie text
   const gameOverText = document.createElement('h1');
   gameOverText.textContent = msg;
   gameOverText.classList.add('endgame-text', 'tracking-in-expand');
-  gameOverDiv.append(gameOverText);
+
+  // append message and blur board on Timeout
+  setTimeout(function () {
+    // blur board
+    const selectBG = document.querySelector('table');
+    selectBG.classList.add('endgame');
+    // append message
+    document.body.append(gameOverDiv);
+    gameOverDiv.append(gameOverText);
+  }, 800);
+}
+
+/** preview:  */
+
+function hoverPreview(e) {
+  // get x from hovered cell
+  const x = e.target.id;
+  hoverX = x;
+
+  // get next spot in column
+  const y = findSpotForCol(x);
+  if (y === null) {
+    return;
+  }
+
+  // create game piece
+  const newTile = document.createElement('div');
+  newTile.classList.add('piece', `p${currPlayer}-hover`);
+  newTile.setAttribute('id', 'ghost-piece');
+  // update HTML boardx`
+  const placeInBoard = document.getElementById(`${y}-${x}`);
+  placeInBoard.append(newTile);
+}
+
+/** previewRemove:  */
+
+function hoverPreviewRemove(e) {
+  // get x from hovered cell
+  const x = hoverX;
+
+  // get next spot in column
+  const y = findSpotForCol(x);
+  if (y === null) {
+    return;
+  }
+
+  // remove piece
+  const pieceToRemove = document.getElementById('ghost-piece');
+  pieceToRemove.remove();
 }
 
 /** handleClick: handle click of column top to play piece */
 
 function handleClick(evt) {
+  // remove ghost piece
+  hoverPreviewRemove(); // produces error but runs
+
   // get x from clicked cell
   const x = +evt.target.id;
 
