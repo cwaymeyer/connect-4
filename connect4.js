@@ -78,6 +78,8 @@ function placeInTable(y, x) {
   // create game piece
   const newTile = document.createElement('div');
   newTile.classList.add('piece', 'bounce-in-top', `p${currPlayer}`);
+  newTile.setAttribute('id', 'game-piece');
+
   // update HTML boardx`
   const placeInBoard = document.getElementById(`${y}-${x}`);
   placeInBoard.append(newTile);
@@ -95,6 +97,27 @@ function endGame(msg) {
   gameOverText.textContent = msg;
   gameOverText.classList.add('endgame-text', 'tracking-in-expand');
 
+  // create new-game div
+  const newGameDiv = document.createElement('div');
+  newGameDiv.classList.add('newgame-message', 'tracking-in-expand');
+  newGameDiv.addEventListener('click', resetGame);
+  // mouse hover
+  newGameDiv.addEventListener('mouseover', function () {
+    newGameDiv.classList.remove('scale-down-left');
+    newGameDiv.classList.add('scale-up-left');
+  });
+
+  // // create new-game text
+  const newGameText = document.createElement('h1');
+  newGameText.textContent = 'New Game';
+  newGameText.classList.add('newgame-text', 'tracking-in-expand');
+  newGameText.addEventListener('click', resetGame);
+  // mouse hover remove
+  newGameDiv.addEventListener('mouseout', function () {
+    newGameDiv.classList.remove('scale-up-left');
+    newGameDiv.classList.add('scale-down-left');
+  });
+
   // append message and blur board on Timeout
   setTimeout(function () {
     // blur board
@@ -103,6 +126,8 @@ function endGame(msg) {
     // append message
     document.body.append(gameOverDiv);
     gameOverDiv.append(gameOverText);
+    gameOverDiv.append(newGameDiv);
+    newGameDiv.append(newGameText);
   }, 800);
 }
 
@@ -149,7 +174,8 @@ function hoverPreviewRemove(e) {
 
 function handleClick(evt) {
   // remove ghost piece
-  hoverPreviewRemove(); // produces error but runs
+  const ghostPiece = document.getElementById('ghost-piece');
+  ghostPiece.remove();
 
   // get x from clicked cell
   const x = +evt.target.id;
@@ -241,6 +267,30 @@ function checkForWin() {
       }
     }
   }
+}
+
+function resetGame() {
+  // remove end-game messages
+  const endgameMessage = document.querySelector('.endgame-message');
+  endgameMessage.remove();
+
+  // remove blur
+  const selectBG = document.querySelector('table');
+  selectBG.classList.remove('endgame');
+
+  // remove game pieces
+  for (let y = 0; y < HEIGHT; y++) {
+    for (let x = 0; x < WIDTH; x++) {
+      const eachCell = document.getElementById(`${y}-${x}`);
+      eachCell.innerHTML = '';
+    }
+  }
+
+  // init values
+  board = [];
+  currPlayer = 1;
+
+  makeBoard();
 }
 
 makeBoard();
