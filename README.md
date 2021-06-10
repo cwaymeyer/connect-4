@@ -2,6 +2,6 @@
 
 Connect 4 game for Springboard curriculum.
 
-### To be implemented: 
+### Known bugs:
 
-Replay game button.
+Can't immediately click on the same tile to drop pieces repeatedly.
