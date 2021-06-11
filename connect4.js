@@ -1,7 +1,7 @@
 /** Connect Four
  *
  * Player 1 and 2 alternate turns. On each turn, a piece is dropped down a
- * column until a player gets four-in-a-row (horiz, vert, or diag) or until
+ * column until a player gets four in a row (horiz, vert, or diag), or until
  * board fills (tie)
  */
 
@@ -16,13 +16,13 @@ let hoverX = 0; // id to store for displaying and removing tile preview
 
 /** makeBoard: create in-JS board structure:
  *    board = array of rows, each row is array of cells  (board[y][x])
- *    board = WIDTH # of arrays each containing HEIGHT number of cells
+ *    board = WIDTH # of arrays each containing HEIGHT # of cells
  */
 
 function makeBoard() {
   for (let i = 0; i < WIDTH; i++) {
     let newArray = [];
-    for (let n = 0; n < HEIGHT; n++) {
+    for (let i = 0; i < HEIGHT; i++) {
       newArray.push(null);
     }
     board.push(newArray);
@@ -30,7 +30,7 @@ function makeBoard() {
   return board;
 }
 
-/** makeHtmlBoard: make HTML table and row of column tops. */
+/** makeHtmlBoard: make HTML table and row of column tops */
 
 function makeHtmlBoard() {
   const htmlBoard = document.getElementById('board');
@@ -38,8 +38,9 @@ function makeHtmlBoard() {
   // Create click zone to drop pieces
   const top = document.createElement('tr');
   top.setAttribute('id', 'column-top');
-  top.addEventListener('click', handleClick);
+  // click and hover event listeners
   top.addEventListener('mouseover', hoverPreview);
+  top.addEventListener('click', handleClick);
   top.addEventListener('mouseout', hoverPreviewRemove);
   for (let x = 0; x < WIDTH; x++) {
     const headCell = document.createElement('td');
@@ -54,7 +55,7 @@ function makeHtmlBoard() {
     const row = document.createElement('tr');
     for (let x = 0; x < WIDTH; x++) {
       const cell = document.createElement('td');
-      // give id of y-x axis positions for each tile
+      // give id of y-x position for each tile
       cell.setAttribute('id', `${y}-${x}`);
       row.append(cell);
     }
@@ -62,10 +63,86 @@ function makeHtmlBoard() {
   }
 }
 
+/** hoverPreview: show 'ghost piece' where piece would be played on click */
+
+function hoverPreview(e) {
+  // get x from hovered cell
+  const x = e.target.id;
+  hoverX = x;
+
+  // get next spot in column
+  const y = findSpotForCol(x);
+  if (y === null) {
+    return;
+  }
+
+  // create game piece
+  const newTile = document.createElement('div');
+  newTile.classList.add('piece', `p${currPlayer}-hover`);
+  newTile.setAttribute('id', 'ghost-piece');
+  // update HTML boardx`
+  const placeInBoard = document.getElementById(`${y}-${x}`);
+  placeInBoard.append(newTile);
+}
+
+/** previewRemove: remove ghost piece */
+
+function hoverPreviewRemove(e) {
+  // get x from hoverX (set in hoverPreview)
+  const x = hoverX;
+
+  // get next spot in column
+  const y = findSpotForCol(x);
+  if (y === null) {
+    return;
+  }
+
+  // remove piece
+  const pieceToRemove = document.getElementById('ghost-piece');
+  pieceToRemove.remove();
+}
+
+/** handleClick: handle click of column top to play piece */
+
+function handleClick(evt) {
+  // get x from clicked cell
+  const x = evt.target.id;
+
+  // get next spot in column (if none, ignore click)
+  const y = findSpotForCol(x);
+  if (y === null) {
+    return;
+  }
+
+  // place piece in board and add to HTML table
+  placeInTable(y, x);
+
+  // update in-memory board
+  for (let i = WIDTH; i >= 0; i--) {
+    if (board[x][i] === null) {
+      board[x][i] = currPlayer;
+      break;
+    }
+  }
+
+  // check for win
+  if (checkForWin()) {
+    return endGame(`🏆  Player ${currPlayer} wins!  🏆`);
+  }
+
+  // check for tie
+  if (board.every((arr) => arr.every((val) => val))) {
+    return endGame("It's a Tie!");
+  }
+
+  // switch players
+  currPlayer === 1 ? currPlayer++ : currPlayer--;
+}
+
 /** findSpotForCol: given column x, return top empty y (null if filled) */
 
 function findSpotForCol(x) {
-  if (board[x][0] !== null) {
+  if (board[x][0]) {
     return null;
   } else {
     return board[x].lastIndexOf(null);
@@ -83,6 +160,63 @@ function placeInTable(y, x) {
   // update HTML boardx`
   const placeInBoard = document.getElementById(`${y}-${x}`);
   placeInBoard.append(newTile);
+}
+
+/** checkForWin: check board cell-by-cell for "does a win start here?" */
+
+function checkForWin() {
+  function _win(cells) {
+    // Check four cells to see if they're all color of current player
+    //  - cells: list of four (y, x) cells
+    //  - returns true if all are legal coordinates & all match currPlayer
+
+    return cells.every(
+      ([y, x]) =>
+        y >= 0 &&
+        y < WIDTH &&
+        x >= 0 &&
+        x < HEIGHT &&
+        board[y][x] === currPlayer
+    );
+  }
+
+  // Check for four in a row
+  for (let y = 0; y < WIDTH; y++) {
+    for (let x = 0; x < HEIGHT; x++) {
+      // horizontal win
+      const horiz = [
+        [y, x],
+        [y, x + 1],
+        [y, x + 2],
+        [y, x + 3],
+      ];
+      // vertical win
+      const vert = [
+        [y, x],
+        [y + 1, x],
+        [y + 2, x],
+        [y + 3, x],
+      ];
+      // diagonal right win
+      const diagDR = [
+        [y, x],
+        [y + 1, x + 1],
+        [y + 2, x + 2],
+        [y + 3, x + 3],
+      ];
+      // diagonal left win
+      const diagDL = [
+        [y, x],
+        [y + 1, x - 1],
+        [y + 2, x - 2],
+        [y + 3, x - 3],
+      ];
+
+      if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
+        return true;
+      }
+    }
+  }
 }
 
 /** endGame: announce game end */
@@ -136,139 +270,7 @@ function endGame(msg) {
   }, 800);
 }
 
-/** preview:  */
-
-function hoverPreview(e) {
-  // get x from hovered cell
-  const x = e.target.id;
-  hoverX = x;
-
-  // get next spot in column
-  const y = findSpotForCol(x);
-  if (y === null) {
-    return;
-  }
-
-  // create game piece
-  const newTile = document.createElement('div');
-  newTile.classList.add('piece', `p${currPlayer}-hover`);
-  newTile.setAttribute('id', 'ghost-piece');
-  // update HTML boardx`
-  const placeInBoard = document.getElementById(`${y}-${x}`);
-  placeInBoard.append(newTile);
-}
-
-/** previewRemove:  */
-
-function hoverPreviewRemove(e) {
-  // get x from hovered cell
-  const x = hoverX;
-
-  // get next spot in column
-  const y = findSpotForCol(x);
-  if (y === null) {
-    return;
-  }
-
-  // remove piece
-  const pieceToRemove = document.getElementById('ghost-piece');
-  pieceToRemove.remove();
-}
-
-/** handleClick: handle click of column top to play piece */
-
-function handleClick(evt) {
-  // get x from clicked cell
-  const x = evt.target.id;
-
-  // get next spot in column (if none, ignore click)
-  const y = findSpotForCol(x);
-  if (y === null) {
-    return;
-  }
-
-  // place piece in board and add to HTML table
-  placeInTable(y, x);
-
-  // update in-memory board
-  for (let i = WIDTH; i >= 0; i--) {
-    if (board[x][i] === null) {
-      board[x][i] = currPlayer;
-      break;
-    }
-  }
-
-  // check for win
-  if (checkForWin()) {
-    return endGame(`🏆  Player ${currPlayer} wins!  🏆`);
-  }
-
-  // check for tie
-  if (board.every((arr) => arr.every((val) => val))) {
-    return endGame("It's a Tie!");
-  }
-
-  // switch players
-  currPlayer === 1 ? currPlayer++ : currPlayer--;
-}
-
-/* checkForWin: check board cell-by-cell for "does a win start here?" */
-function checkForWin() {
-  function _win(cells) {
-    // Check four cells to see if they're all color of current player
-    //  - cells: list of four (y, x) cells
-    //  - returns true if all are legal coordinates & all match currPlayer
-
-    // SWAPPED WIDTH AND HEIGHT BELOW
-    return cells.every(
-      ([y, x]) =>
-        y >= 0 &&
-        y < WIDTH &&
-        x >= 0 &&
-        x < HEIGHT &&
-        board[y][x] === currPlayer
-    );
-  }
-
-  // SWAPPED WIDTH AND HEIGHT BELOW
-  // Check for four in a row
-  for (let y = 0; y < WIDTH; y++) {
-    for (let x = 0; x < HEIGHT; x++) {
-      // horizontal win
-      const horiz = [
-        [y, x],
-        [y, x + 1],
-        [y, x + 2],
-        [y, x + 3],
-      ];
-      // vertical win
-      const vert = [
-        [y, x],
-        [y + 1, x],
-        [y + 2, x],
-        [y + 3, x],
-      ];
-      // diagonal right win
-      const diagDR = [
-        [y, x],
-        [y + 1, x + 1],
-        [y + 2, x + 2],
-        [y + 3, x + 3],
-      ];
-      // diagonal left win
-      const diagDL = [
-        [y, x],
-        [y + 1, x - 1],
-        [y + 2, x - 2],
-        [y + 3, x - 3],
-      ];
-
-      if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
-        return true;
-      }
-    }
-  }
-}
+/** resetGame: put board and HTML board back to original state */
 
 function resetGame() {
   // remove end-game messages

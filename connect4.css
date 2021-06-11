@@ -17,7 +17,6 @@ body {
     rgba(241, 222, 192, 1) 0%,
     rgba(242, 217, 179, 1) 100%
   );
-  /* background-color: #f2d9b3; */
   clip-path: polygon(100% 0, 100% 70%, 0 100%, 0 30%);
   z-index: -1;
 }
@@ -59,6 +58,7 @@ table {
   margin-right: auto;
   position: relative;
 }
+
 /* game board table */
 
 #board td {
@@ -82,22 +82,18 @@ table {
 
 .p1 {
   background-color: #f16657;
-  /* background-color: #645f5c; */
 }
 
 .p2 {
   background-color: #70a5a8;
-  /* background-color: #7e449b; */
 }
 
 .p1-hover {
   background-color: #f5d3cf;
-  /* background-color: rgb(255, 200, 200); */
 }
 
 .p2-hover {
   background-color: #c8cfcf;
-  /* background-color: rgb(200, 200, 255); */
 }
 
 /* column-top is table row of clickable areas for each column */
@@ -128,7 +124,6 @@ table {
 }
 
 .endgame-text {
-  /* font-family: 'ZCOOL KuaiLe', cursive; */
   text-align: center;
   font-size: 4em;
   color: rgb(77, 48, 6);
