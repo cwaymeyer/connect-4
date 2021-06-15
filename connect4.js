@@ -295,6 +295,8 @@ function resetGame() {
 
   makeBoard();
   top.addEventListener('click', handleClick);
+  top.addEventListener('mouseover', hoverPreview);
+  top.addEventListener('mouseout', hoverPreviewRemove);
 }
 
 makeBoard();
