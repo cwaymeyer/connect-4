@@ -1,3 +1,3 @@
 # connect-4
 
-Connect four game for Springboard curriculum.
+Connect four game for Springboard Software Engineering curriculum.
