@@ -40,8 +40,8 @@ function makeHtmlBoard() {
   top.setAttribute('id', 'column-top');
   // click and hover event listeners
   top.addEventListener('mouseover', hoverPreview);
-  top.addEventListener('click', handleClick);
   top.addEventListener('mouseout', hoverPreviewRemove);
+  top.addEventListener('click', handleClick);
   for (let x = 0; x < WIDTH; x++) {
     const headCell = document.createElement('td');
     // give id of x axis position
@@ -80,7 +80,7 @@ function hoverPreview(e) {
   const newTile = document.createElement('div');
   newTile.classList.add('piece', `p${currPlayer}-hover`);
   newTile.setAttribute('id', 'ghost-piece');
-  // update HTML boardx`
+  // update HTML board
   const placeInBoard = document.getElementById(`${y}-${x}`);
   placeInBoard.append(newTile);
 }
@@ -118,12 +118,7 @@ function handleClick(evt) {
   placeInTable(y, x);
 
   // update in-memory board
-  for (let i = WIDTH; i >= 0; i--) {
-    if (board[x][i] === null) {
-      board[x][i] = currPlayer;
-      break;
-    }
-  }
+  board[x][y] = currPlayer;
 
   // check for win
   if (checkForWin()) {
@@ -139,14 +134,10 @@ function handleClick(evt) {
   currPlayer === 1 ? currPlayer++ : currPlayer--;
 }
 
-/** findSpotForCol: given column x, return top empty y (null if filled) */
+/** findSpotForCol: given column x, return top empty y */
 
 function findSpotForCol(x) {
-  if (board[x][0]) {
-    return null;
-  } else {
-    return board[x].lastIndexOf(null);
-  }
+  return board[x].lastIndexOf(null);
 }
 
 /** placeInTable: update DOM to place piece into HTML table of board */
@@ -157,7 +148,7 @@ function placeInTable(y, x) {
   newTile.classList.add('piece', 'bounce-in-top', `p${currPlayer}`);
   newTile.setAttribute('id', 'game-piece');
 
-  // update HTML boardx`
+  // update HTML board
   const placeInBoard = document.getElementById(`${y}-${x}`);
   placeInBoard.append(newTile);
 }
@@ -168,8 +159,8 @@ function checkForWin() {
   function _win(cells) {
     // Check four cells to see if they're all color of current player
     //  - cells: list of four (y, x) cells
-    //  - returns true if all are legal coordinates & all match currPlayer
 
+    // Check if all coordinates are within the board
     return cells.every(
       ([y, x]) =>
         y >= 0 &&
@@ -231,7 +222,7 @@ function endGame(msg) {
   const gameOverDiv = document.createElement('div');
   gameOverDiv.classList.add('endgame-message', 'tracking-in-expand');
 
-  // create winner/tie text
+  // create game-over text
   const gameOverText = document.createElement('h1');
   gameOverText.textContent = msg;
   gameOverText.classList.add('endgame-text', 'tracking-in-expand');
@@ -293,10 +284,11 @@ function resetGame() {
   board = [];
   currPlayer = 1;
 
+  // re-create board and add event listeners
   makeBoard();
-  top.addEventListener('click', handleClick);
   top.addEventListener('mouseover', hoverPreview);
   top.addEventListener('mouseout', hoverPreviewRemove);
+  top.addEventListener('click', handleClick);
 }
 
 makeBoard();
